@@ -9,7 +9,7 @@ import cors from 'cors';
 import express from 'express';
 import helmet from 'helmet';
 import hpp from 'hpp';
-import { connect, ConnectOptions, set } from 'mongoose';
+import { connect, connection, ConnectOptions, set } from 'mongoose';
 import morgan from 'morgan';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
@@ -49,7 +49,10 @@ class App {
       set('debug', true);
     }
 
-    connect(dbConnection.url, dbConnection.options as ConnectOptions);
+    connect(dbConnection.uri, dbConnection.options as ConnectOptions);
+    connection.on('connected', () => {
+      logger.info(`Mongoose connection open to ${dbConnection.url}`);
+    });
   }
 
   private initializeMiddlewares() {
