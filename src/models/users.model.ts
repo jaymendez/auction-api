@@ -1,5 +1,5 @@
-import { model, Schema, Document } from 'mongoose';
 import { User } from '@interfaces/users.interface';
+import { Document, model, Schema } from 'mongoose';
 
 const userSchema: Schema = new Schema({
   email: {
@@ -10,6 +10,10 @@ const userSchema: Schema = new Schema({
   password: {
     type: String,
     required: true,
+  },
+  moneyAmount: {
+    type: Number,
+    default: 0,
   },
 });
 

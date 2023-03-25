@@ -1,13 +1,19 @@
 import { Lot } from '@/interfaces/lots.interface';
+import { Transaction } from '@/interfaces/transaction.interface';
 import LotService from '@/services/lots.service';
+import TransactionService from '@/services/transaction.service';
+import UserService from '@/services/users.service';
 import { NextFunction, Request, Response } from 'express';
 
 class LotsController {
   public lotService = new LotService();
+  public transactionService = new TransactionService();
+  public userService = new UserService();
 
   public getLots = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const findAllLotsData = await this.lotService.findAllLot();
+      const { userId, status } = req.query;
+      const findAllLotsData = await this.lotService.findAllLot({ userId, status });
 
       res.status(200).json({ data: findAllLotsData, message: 'findAll' });
     } catch (error) {
@@ -37,28 +43,53 @@ class LotsController {
     }
   };
 
-  // public updateUser = async (req: Request, res: Response, next: NextFunction) => {
-  //   try {
-  //     const userId: string = req.params.id;
-  //     const userData: CreateUserDto = req.body;
-  //     const updateUserData: User = await this.userService.updateUser(userId, userData);
+  public updateLot = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const lotId: string = req.params.id;
+      const lotData = req.body;
+      const updateLotData: Lot = await this.lotService.updateLot(lotId, lotData);
 
-  //     res.status(200).json({ data: updateUserData, message: 'updated' });
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // };
+      res.status(200).json({ data: updateLotData, message: 'updated' });
+    } catch (error) {
+      next(error);
+    }
+  };
 
-  // public deleteUser = async (req: Request, res: Response, next: NextFunction) => {
-  //   try {
-  //     const userId: string = req.params.id;
-  //     const deleteUserData: User = await this.userService.deleteUser(userId);
+  public createTransactionAndUpdateLot = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const lotId = req.params.id;
+      const transactionData = req.body;
+      await this.transactionService.closeLotTransactions(lotId);
+      const createTransactionData: Transaction = await this.transactionService.createTransaction(transactionData);
+      const updateLotData: Lot = await this.lotService.addBidToLot(lotId, createTransactionData);
 
-  //     res.status(200).json({ data: deleteUserData, message: 'deleted' });
-  //   } catch (error) {
-  //     next(error);
-  //   }
-  // };
+      res.status(201).json({ data: updateLotData, message: 'bidAction' });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  public lotTransfer = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const lotId = req.params.id;
+      const transactionData = req.body;
+      const updatedTransaction = await this.transactionService.updateTransaction(transactionData._id, { status: 'success' });
+      const oldLot = await this.lotService.findLotById(lotId);
+      // Transfer the money to the owner of the lot
+      const owner = await this.userService.computeUserMoney(transactionData, false, oldLot.userId);
+
+      // Transfer the ownership of the lot to the owner and update the price of the item
+      const updatedLot = await this.lotService.updateLot(lotId, {
+        status: 'completed',
+        userId: transactionData.userId,
+        startingPrice: updatedTransaction.transactionAmount,
+      });
+
+      res.status(201).json({ data: { transaction: updatedTransaction, owner, lot: updatedLot }, message: 'lotTransfer' });
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export default LotsController;

@@ -1,5 +1,5 @@
-import { Request } from 'express';
 import { User } from '@interfaces/users.interface';
+import { Request } from 'express';
 
 export interface DataStoredInToken {
   _id: string;
@@ -7,7 +7,7 @@ export interface DataStoredInToken {
 
 export interface TokenData {
   token: string;
-  expiresIn: number;
+  expiresIn: number | string;
 }
 
 export interface RequestWithUser extends Request {

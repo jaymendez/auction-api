@@ -1,9 +1,10 @@
-import { hash } from 'bcrypt';
+import { Transaction } from '@/interfaces/transaction.interface';
 import { CreateUserDto } from '@dtos/users.dto';
 import { HttpException } from '@exceptions/HttpException';
 import { User } from '@interfaces/users.interface';
 import userModel from '@models/users.model';
 import { isEmpty } from '@utils/util';
+import { hash } from 'bcrypt';
 
 class UserService {
   public users = userModel;
@@ -14,7 +15,7 @@ class UserService {
   }
 
   public async findUserById(userId: string): Promise<User> {
-    if (isEmpty(userId)) throw new HttpException(400, "UserId is empty");
+    if (isEmpty(userId)) throw new HttpException(400, 'UserId is empty');
 
     const findUser: User = await this.users.findOne({ _id: userId });
     if (!findUser) throw new HttpException(409, "User doesn't exist");
@@ -23,7 +24,7 @@ class UserService {
   }
 
   public async createUser(userData: CreateUserDto): Promise<User> {
-    if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
+    if (isEmpty(userData)) throw new HttpException(400, 'userData is empty');
 
     const findUser: User = await this.users.findOne({ email: userData.email });
     if (findUser) throw new HttpException(409, `This email ${userData.email} already exists`);
@@ -35,7 +36,7 @@ class UserService {
   }
 
   public async updateUser(userId: string, userData: CreateUserDto): Promise<User> {
-    if (isEmpty(userData)) throw new HttpException(400, "userData is empty");
+    if (isEmpty(userData)) throw new HttpException(400, 'userData is empty');
 
     if (userData.email) {
       const findUser: User = await this.users.findOne({ email: userData.email });
@@ -47,7 +48,7 @@ class UserService {
       userData = { ...userData, password: hashedPassword };
     }
 
-    const updateUserById: User = await this.users.findByIdAndUpdate(userId, { userData });
+    const updateUserById: User = await this.users.findByIdAndUpdate(userId, { $set: userData }).exec();
     if (!updateUserById) throw new HttpException(409, "User doesn't exist");
 
     return updateUserById;
@@ -58,6 +59,21 @@ class UserService {
     if (!deleteUserById) throw new HttpException(409, "User doesn't exist");
 
     return deleteUserById;
+  }
+
+  public async computeUserMoney(transaction: Transaction, deduct?: boolean, userId?: string): Promise<User> {
+    if (isEmpty(transaction)) throw new HttpException(400, 'transaction is empty');
+    let amount = transaction.transactionAmount;
+    if (deduct) {
+      amount = amount * -1;
+    }
+    let id = transaction.userId;
+    if (userId) {
+      id = userId;
+    }
+    const updateUserById: User = await this.users.findByIdAndUpdate(id, { $inc: { moneyAmount: amount } }).exec();
+
+    return updateUserById;
   }
 }
 

@@ -1,4 +1,5 @@
 import LotsController from '@/controllers/lots.controller';
+import authMiddleware from '@/middlewares/auth.middleware';
 import { Routes } from '@interfaces/routes.interface';
 import { Router } from 'express';
 
@@ -13,8 +14,11 @@ class LotsRoute implements Routes {
 
   private initializeRoutes() {
     this.router.get(`${this.path}`, this.lotsController.getLots);
-    this.router.get(`${this.path}/:id`, this.lotsController.getLotById);
-    this.router.post(`${this.path}`, this.lotsController.createLot);
+    this.router.get(`${this.path}/:id`, authMiddleware, this.lotsController.getLotById);
+    this.router.post(`${this.path}`, authMiddleware, this.lotsController.createLot);
+    this.router.put(`${this.path}/:id`, authMiddleware, this.lotsController.updateLot);
+    this.router.put(`${this.path}/:id/transaction`, authMiddleware, this.lotsController.createTransactionAndUpdateLot);
+    this.router.put(`${this.path}/:id/transfer`, authMiddleware, this.lotsController.lotTransfer);
   }
 }
 

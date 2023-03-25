@@ -1,16 +1,16 @@
 import { Lot } from '@/interfaces/lots.interface';
 import { Document, model, Schema } from 'mongoose';
 
-const bidsSchema: Schema = new Schema(
-  {
-    userId: {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-    },
-    price: { type: Number, required: true },
-  },
-  { timestamps: true },
-);
+// const bidsSchema: Schema = new Schema(
+//   {
+//     transactionId: {
+//       type: Schema.Types.ObjectId,
+//       ref: 'User',
+//     },
+//     price: { type: Number, required: true },
+//   },
+//   { timestamps: true },
+// );
 
 const lotSchema: Schema = new Schema(
   {
@@ -19,7 +19,11 @@ const lotSchema: Schema = new Schema(
       required: true,
       unique: true,
     },
-    bids: [bidsSchema],
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    bids: [{ type: Schema.Types.ObjectId, ref: 'Transaction' }],
     auctionTime: {
       startTime: { type: Date },
       endTime: { type: Date },

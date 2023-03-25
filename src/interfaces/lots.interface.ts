@@ -1,7 +1,10 @@
+import { Transaction } from './transaction.interface';
+
 export interface Lot {
   _id: string;
+  userId: string;
   name: string;
-  bids: Bid[];
+  bids: Transaction[];
   startingPrice: number;
   status: string;
   auctionTime: AuctionTime;
