@@ -51,7 +51,7 @@ class App {
 
     connect(dbConnection.uri, dbConnection.options as ConnectOptions);
     connection.on('connected', () => {
-      logger.info(`Mongoose connection open to ${dbConnection.url}`);
+      logger.info(`Mongoose connection open to ${dbConnection.uri}`);
     });
   }
 

@@ -18,7 +18,7 @@ services:
       dockerfile: Dockerfile
     container_name: server
     ports:
-      - '3000:3000'
+      - '3001:3001'
     volumes:
       - ./:/app
       - /app/node_modules
@@ -31,9 +31,9 @@ services:
       - mongo
   mongo:
     image: mvertes/alpine-mongo
-    container_name: mongo
+    container_name: auction.mongo
     ports:
-      - '27017:27017'
+      - '5000:27017'
     networks:
       - backend
 

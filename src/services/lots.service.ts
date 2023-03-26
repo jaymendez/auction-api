@@ -32,7 +32,7 @@ class LotService {
         userId,
       };
     }
-    console.log(findQuery, status);
+
     const lots: Lot[] = await this.lots.find(findQuery).populate('bids');
     return lots;
   }
