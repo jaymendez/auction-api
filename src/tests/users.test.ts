@@ -1,9 +1,9 @@
-import bcrypt from 'bcrypt';
-import mongoose from 'mongoose';
-import request from 'supertest';
 import App from '@/app';
 import { CreateUserDto } from '@dtos/users.dto';
 import UsersRoute from '@routes/users.route';
+import bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
+import request from 'supertest';
 
 afterAll(async () => {
   await new Promise<void>(resolve => setTimeout(() => resolve(), 500));
@@ -11,7 +11,7 @@ afterAll(async () => {
 
 describe('Testing Users', () => {
   describe('[GET] /users', () => {
-    it('response fineAll Users', async () => {
+    it('response findAll Users', async () => {
       const usersRoute = new UsersRoute();
       const users = usersRoute.usersController.userService.users;
 
@@ -20,16 +20,19 @@ describe('Testing Users', () => {
           _id: 'qpwoeiruty',
           email: 'a@email.com',
           password: await bcrypt.hash('q1w2e3r4!', 10),
+          moneyAmount: 20,
         },
         {
           _id: 'alskdjfhg',
           email: 'b@email.com',
           password: await bcrypt.hash('a1s2d3f4!', 10),
+          moneyAmount: 40,
         },
         {
           _id: 'zmxncbv',
           email: 'c@email.com',
           password: await bcrypt.hash('z1x2c3v4!', 10),
+          moneyAmount: 0,
         },
       ]);
 
@@ -63,6 +66,7 @@ describe('Testing Users', () => {
       const userData: CreateUserDto = {
         email: 'test@email.com',
         password: 'q1w2e3r4',
+        moneyAmount: 0,
       };
 
       const usersRoute = new UsersRoute();
@@ -87,6 +91,7 @@ describe('Testing Users', () => {
       const userData: CreateUserDto = {
         email: 'test@email.com',
         password: 'q1w2e3r4',
+        moneyAmount: 0,
       };
 
       const usersRoute = new UsersRoute();
@@ -107,6 +112,8 @@ describe('Testing Users', () => {
       });
 
       (mongoose as any).connect = jest.fn();
+      (users as any).findByIdAndUpdate = jest.fn();
+      (users as any).findByIdAndUpdate.exec = jest.fn();
       const app = new App([usersRoute]);
       return request(app.getServer()).put(`${usersRoute.path}/${userId}`).send(userData);
     });
