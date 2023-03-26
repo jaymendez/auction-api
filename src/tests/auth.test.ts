@@ -1,9 +1,9 @@
-import bcrypt from 'bcrypt';
-import mongoose from 'mongoose';
-import request from 'supertest';
 import App from '@/app';
 import { CreateUserDto } from '@dtos/users.dto';
 import AuthRoute from '@routes/auth.route';
+import bcrypt from 'bcrypt';
+import mongoose from 'mongoose';
+import request from 'supertest';
 
 afterAll(async () => {
   await new Promise<void>(resolve => setTimeout(() => resolve(), 500));
@@ -15,6 +15,7 @@ describe('Testing Auth', () => {
       const userData: CreateUserDto = {
         email: 'test@email.com',
         password: 'q1w2e3r4!',
+        moneyAmount: 0,
       };
 
       const authRoute = new AuthRoute();
@@ -25,6 +26,7 @@ describe('Testing Auth', () => {
         _id: '60706478aad6c9ad19a31c84',
         email: userData.email,
         password: await bcrypt.hash(userData.password, 10),
+        moneyAmount: 0,
       });
 
       (mongoose as any).connect = jest.fn();
@@ -38,6 +40,7 @@ describe('Testing Auth', () => {
       const userData: CreateUserDto = {
         email: 'test@email.com',
         password: 'q1w2e3r4!',
+        moneyAmount: 0,
       };
 
       const authRoute = new AuthRoute();
