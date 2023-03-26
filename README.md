@@ -22,6 +22,7 @@
 - [Problem Statement](#problem_statement)
 - [Idea / Solution](#idea)
 - [Getting Started](#getting_started)
+- [Running the Tests](#tests)
 - [Built Using](#built_using)
 - [Authors](#authors)
 
