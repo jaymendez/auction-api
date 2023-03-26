@@ -93,7 +93,7 @@ https://docs.docker.com/desktop/install/mac-install/
 ##### Linux
 https://docs.docker.com/desktop/install/linux-install/
 
-##### 3. Rename the file sample.env to .env
+##### 3. Rename the file sample.env.development.local to .env.development.local
 
 ##### 4. On the terminal, go to your project directory, and run these commands. It may take 2 - 5 minutes to get it running as it's installing the dependencies of the project.
 
@@ -144,7 +144,7 @@ git clone https://github.com/jaymendez/auction-api.git
 cd auction-api && npm install
 ```
 
-##### 3. Rename the file sample.env to .env
+##### 3. Rename the file sample.env.development.local to .env.development.local
 
 ##### 4. Run the development server
 ```
